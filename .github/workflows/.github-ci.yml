@@ -1,9 +1,23 @@
-stages:
-  - build
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
 
-build-job:
-  stage: build
-  script:
-    - hostname
-    - python3 --version
-    - echo "Compile complete."
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+      - name: Execute Build Commands
+        run: |
+          echo "--- Runner Hostname ---"
+          hostname
+          
+          echo "--- Python Version Check ---"
+          python3 --version
+          
+          echo "--- Build Status ---"
+          echo "Compile complete."
