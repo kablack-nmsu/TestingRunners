@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-on:
+  build-job:
     runs-on: ubuntu-latest
     steps:
       - name: Execute Build Commands
@@ -19,18 +19,6 @@ jobs:
           
           echo "--- Build Status ---"
           echo "Compile complete."
-  test-job:
-    needs: build-job
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository code
-        uses: actions/checkout@v4
-        
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.8'
 
 
       - name: Deploy Virtual Environment and Run Script
