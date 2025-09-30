@@ -22,14 +22,14 @@ jobs:
           python3 --version
           echo "Compile complete."
 
-  test-job:
+  run-job:
     needs: build-job
     runs-on: ubuntu-latest
 
     steps:
       - name: Manual Git Checkout
         run: |
-          echo "Cloning repository for test job..."
+          echo "Cloning repository for run job..."
           git clone --depth 1 "https://github.com/${{ github.repository }}" . 
           git checkout ${{ github.sha }}
 
@@ -37,7 +37,6 @@ jobs:
         run: |
           echo "Installing Python 3 and venv module..."
           sudo apt-get update
-          # Install venv utility for Python 3
           sudo apt-get install -y python3-venv
           echo "Installation complete."
 
@@ -45,23 +44,15 @@ jobs:
         run: |
           echo "Current working directory: $(pwd)"
           
-          # 1. Create the virtual environment folder
           python3 -m venv venvRG
           
-          # 2. Activate the virtual environment
-          # The source command makes the 'python' executable inside the venv available.
           source venvRG/bin/activate
           
           echo "--- VENV Activated. Running script ---"
           
-          # 3. *** EXECUTE SCRIPT ***
-          # Use the python interpreter *inside* the VENV to run the script 
-          # at the relative path 'app/randomgrid.py'.
           ./venvRG/bin/python app/randomgrid.py
           
-          # 4. Cleanup
           deactivate
-          # The rm -rf command removes the venv folder from the runner/server
           rm -rf venvRG
           
           echo "Virtual environment cleanup complete."
