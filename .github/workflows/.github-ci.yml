@@ -27,7 +27,7 @@ jobs:
           
           source venvRG/bin/activate 
           
-          ./venvRG/bin/python app/randomgrid.py
+          ./venvRG/bin/python /home/runner/work/TestingRunners/app/randomgrid.py
           
           deactivate
 
