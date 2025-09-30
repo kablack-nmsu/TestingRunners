@@ -20,15 +20,6 @@ jobs:
           echo "--- Build Status ---"
           echo "Compile complete."
 
-      - name: Verify File Existence
-        run: |
-          echo "Current working directory is: $(pwd)"
-          echo "Checking if file exists in: $GITHUB_WORKSPACE/${{ env.PYTHON_SCRIPT_PATH }}"
-          ls -l $GITHUB_WORKSPACE/${{ env.PYTHON_SCRIPT_PATH }}
-          if [ ! -f $GITHUB_WORKSPACE/${{ env.PYTHON_SCRIPT_PATH }} ]; then
-            echo "--- ERROR: File was not found after checkout. Please check the commit history. ---"
-            exit 1
-          fi
 
       - name: Deploy Virtual Environment and Run Script
         run: |
@@ -36,8 +27,8 @@ jobs:
           
           source venvRG/bin/activate 
           
-          ./venvRG/bin/python "$GITHUB_WORKSPACE/${{ env.PYTHON_SCRIPT_PATH }}"
-
+          ./venvRG/bin/python app/randomgrid.py
+          
           deactivate
 
           echo "--- Cleaning up venvRG folder ---"
