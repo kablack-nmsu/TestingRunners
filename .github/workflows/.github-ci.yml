@@ -19,3 +19,32 @@ jobs:
           
           echo "--- Build Status ---"
           echo "Compile complete."
+  test-job:
+    needs: build-job # Ensures the build check runs first
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+        
+      # Setup Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x' # Use a stable Python version
+
+
+      - name: Deploy Virtual Environment and Run Script
+        run: |
+          python -m venv venvRG
+          
+          source venvRG/bin/activate
+          
+          python3 app/randomgrid.py
+
+          deactivate
+
+          echo "--- Cleaning up venvRG folder ---"
+          rm -rf venvRG
+          
+          echo "Virtual environment cleanup complete."
