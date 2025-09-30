@@ -1,4 +1,4 @@
-name: Python Build and Test Pipeline
+name: Shell-Based Python Build and Test
 
 on:
   push:
@@ -11,12 +11,10 @@ jobs:
     steps:
       - name: Manual Git Checkout
         run: |
-          # The runner is already in the $GITHUB_WORKSPACE directory.
-          # We use git clone . to pull the remote code into the current directory.
-          # The URL is provided by GitHub context variables.
-          # We check out the specific commit hash or branch being run.
+          echo "Cloning repository..."
           git clone --depth 1 "https://github.com/${{ github.repository }}" . 
           git checkout ${{ github.sha }}
+          echo "Checkout complete."
 
       - name: Execute Build Commands
         run: |
@@ -31,29 +29,39 @@ jobs:
     steps:
       - name: Manual Git Checkout
         run: |
-          # Repeat the manual checkout to get the code onto this new test runner
+          echo "Cloning repository for test job..."
           git clone --depth 1 "https://github.com/${{ github.repository }}" . 
           git checkout ${{ github.sha }}
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
+      - name: Install Python and Dependencies
+        run: |
+          echo "Installing Python 3 and venv module..."
+          sudo apt-get update
+          # Install venv utility for Python 3
+          sudo apt-get install -y python3-venv
+          echo "Installation complete."
 
       - name: Deploy Virtual Environment and Run Script
         run: |
-          # 1. Create and activate venv
-          python -m venv venvRG
+          echo "Current working directory: $(pwd)"
+          
+          # 1. Create the virtual environment folder
+          python3 -m venv venvRG
+          
+          # 2. Activate the virtual environment
+          # The source command makes the 'python' executable inside the venv available.
           source venvRG/bin/activate
-
+          
           echo "--- VENV Activated. Running script ---"
-
-          # 2. *** EXECUTE SCRIPT ***
-          # Uses the simplified relative path 'app/randomgrid.py'
+          
+          # 3. *** EXECUTE SCRIPT ***
+          # Use the python interpreter *inside* the VENV to run the script 
+          # at the relative path 'app/randomgrid.py'.
           ./venvRG/bin/python app/randomgrid.py
-
-          # 3. Cleanup
+          
+          # 4. Cleanup
           deactivate
+          # The rm -rf command removes the venv folder from the runner/server
           rm -rf venvRG
-
+          
           echo "Virtual environment cleanup complete."
