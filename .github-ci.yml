@@ -1,9 +1,0 @@
-stages:
-  - build
-
-build-job:
-  stage: build
-  script:
-    - hostname
-    - python3 --version
-    - echo "Compile complete."
