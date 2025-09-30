@@ -27,7 +27,7 @@ jobs:
           
           source venvRG/bin/activate 
           
-          python3 /home/runner/work/TestingRunners/app/randomgrid.py
+          python3 /home/runner/work/kablack-nmsu/TestingRunners/app/randomgrid.py
           
           deactivate
 
