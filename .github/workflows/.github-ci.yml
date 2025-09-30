@@ -25,7 +25,9 @@ jobs:
         run: |
           python -m venv venvRG
           
-          source ./venvRG/bin/python app/randomgrid.py
+          source venvRG/bin/activate 
+          
+          ./venvRG/bin/python app/randomgrid.py
 
           deactivate
 
