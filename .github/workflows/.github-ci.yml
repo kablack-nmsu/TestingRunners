@@ -1,37 +1,46 @@
+name: File Existence Check Pipeline
+
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
     branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
-  build-job:
+
+  test-job:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Execute Build Commands
+      - name: Checkout repository code (Deep Clone)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find Script in Workspace (CRITICAL TEST)
+        id: find_file
         run: |
-          echo "--- Runner Hostname ---"
-          hostname
+          WORKSPACE_ROOT=$(pwd)
           
-          echo "--- Python Version Check ---"
-          python3 --version
+          echo "--- Starting Search for randomgrid.py in: $GITHUB_WORKSPACE ---"
           
-          echo "--- Build Status ---"
-          echo "Compile complete."
-
-
-      - name: Deploy Virtual Environment and Run Script
-        run: |
-          python -m venv venvRG
+          # Use 'find' to locate the file anywhere under the workspace root
+          FOUND_PATH=$(find "$GITHUB_WORKSPACE" -name "randomgrid.py" 2>/dev/null)
           
-          source venvRG/bin/activate 
-
-          ./venvRG/bin/python3 /home/runner/work/kablack-nmsu/TestingRunners/app/randomgrid.py
+          if [ -z "$FOUND_PATH" ]; then
+            echo "::error::File 'randomgrid.py' NOT FOUND anywhere in the checked-out repository."
+            echo "Current PWD: $WORKSPACE_ROOT"
+            echo "Contents of app/ directory:"
+            ls -al app/
+            echo "Contents of Repository Root:"
+            ls -al $GITHUB_WORKSPACE
+            exit 1
+          else
+            echo "::notice::SUCCESS! File found at: $FOUND_PATH"
+            echo "FOUND_PATH=$FOUND_PATH" >> $GITHUB_OUTPUT
+          fi
           
-          deactivate
-
-          echo "--- Cleaning up venvRG folder ---"
-          rm -rf venvRG
-          
-          echo "Virtual environment cleanup complete."
+      - name: SUCCESS - File Found
+        if: success() && steps.find_file.outputs.FOUND_PATH != ''
+        run: echo "The file was successfully located. The path error is fixed."
+        
+      # You can add the real Python execution steps back here once this test passes.
